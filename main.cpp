@@ -13,10 +13,10 @@ typedef unsigned char UCHAR;
 #define HCOM_ERR    1
 #define NULL_PTR    0
 
-ULONG GetBackGround(Mat& srcFrame, Mat& dstFrame);
-ULONG GetPixelValueInRegion(Mat& srcFrame, Point& center, INT& regionSize, UCHAR* regionValue);
-ULONG SortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos);
-ULONG CalBackgroundValue(UCHAR* regionValue, INT& regionSize, INT& sampleNum, UCHAR& backgroundValue);
+ULONG getBackGround(Mat& srcFrame, Mat& dstFrame);
+ULONG getPixelValueInRegion(Mat& srcFrame, Point& center, INT& regionSize, UCHAR* regionValue);
+ULONG sortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos);
+ULONG calBackgroundValue(UCHAR* regionValue, INT& regionSize, INT& sampleNum, UCHAR& backgroundValue);
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
     Mat backgroungFrame;
 
     srcFrame = imread("");  //读入一副灰度图像
-    GetBackGround(srcFrame, backgroungFrame);
+    getBackGround(srcFrame, backgroungFrame);
 
     imshow("srcFrame", srcFrame);
     imshow("backgroungFrame", backgroungFrame);
@@ -40,13 +40,9 @@ int main()
   返 回 值  : 
   调用函数  : N/A
   被调函数  : 
-  
-  修改历史      :
-   1.日    期   : 2018年3月6日
-     作    者   : ccy0739
-     修改内容   : 新生成函数
+  作    者   : chengcy
  *****************************************************************************/
-ULONG GetBackGround(Mat& srcFrame, Mat& dstFrame)
+ULONG getBackGround(Mat& srcFrame, Mat& dstFrame)
 {
     ULONG ret = HCOM_OK;
 
@@ -78,9 +74,9 @@ ULONG GetBackGround(Mat& srcFrame, Mat& dstFrame)
         for (INT y = regionSize / 2; y < (rows - regionSize / 2); y++)
         {
             //邻域中的点
-            ret = GetPixelValueInRegion(srcFrame, Point(x, y), regionSize, regionPixelValue);
+            ret = getPixelValueInRegion(srcFrame, Point(x, y), regionSize, regionPixelValue);
 
-            ret = CalBackgroundValue(regionPixelValue, regionSize, sampleNum, backgroundValue);
+            ret = calBackgroundValue(regionPixelValue, regionSize, sampleNum, backgroundValue);
 
             dstData[y * srcFrame.cols + x] = backgroundValue;
         }
@@ -131,13 +127,9 @@ ULONG GetBackGround(Mat& srcFrame, Mat& dstFrame)
   返 回 值  : 
   调用函数  : N/A
   被调函数  : 
-  
-  修改历史      :
-   1.日    期   : 2018年4月25日
-     作    者   : ccy0739
-     修改内容   : 新生成函数
+  作    者   : chengcy
  *****************************************************************************/
-ULONG GetPixelValueInRegion(Mat& srcFrame, Point& center, INT& regionSize, UCHAR* regionValue)
+ULONG getPixelValueInRegion(Mat& srcFrame, Point& center, INT& regionSize, UCHAR* regionValue)
 {
     ULONG ret = HCOM_OK;
 
@@ -175,13 +167,9 @@ ULONG GetPixelValueInRegion(Mat& srcFrame, Point& center, INT& regionSize, UCHAR
   返 回 值  : 
   调用函数  : N/A
   被调函数  : 
-  
-  修改历史      :
-   1.日    期   : 2018年4月25日
-     作    者   : ccy0739
-     修改内容   : 新生成函数
+  作    者   : chengcy
  *****************************************************************************/
-ULONG SortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos)
+ULONG sortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos)
 {
     ULONG ret = HCOM_OK;
     INT i = startPos;
@@ -205,8 +193,8 @@ ULONG SortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos)
         }
         regionValue[i] = temp;
 
-        SortPixelValueInRegion(regionValue, startPos, i - 1);
-        SortPixelValueInRegion(regionValue, j + 1, endPos);
+        sortPixelValueInRegion(regionValue, startPos, i - 1);
+        sortPixelValueInRegion(regionValue, j + 1, endPos);
     }
     else
     {
@@ -224,19 +212,15 @@ ULONG SortPixelValueInRegion(UCHAR* regionValue, INT startPos, INT endPos)
   返 回 值  : 
   调用函数  : N/A
   被调函数  : 
-  
-  修改历史      :
-   1.日    期   : 2018年4月25日
-     作    者   : ccy0739
-     修改内容   : 新生成函数
+  作    者   : chengcy
  *****************************************************************************/
-ULONG CalBackgroundValue(UCHAR* regionValue, INT& regionSize, INT& sampleNum, UCHAR& backgroundValue)
+ULONG calBackgroundValue(UCHAR* regionValue, INT& regionSize, INT& sampleNum, UCHAR& backgroundValue)
 {
     ULONG ret = HCOM_OK;
     INT sum = 0;
 
     //对邻域内的值排序
-    ret = SortPixelValueInRegion(regionValue, 0, (regionSize * regionSize) - 1);
+    ret = sortPixelValueInRegion(regionValue, 0, (regionSize * regionSize) - 1);
 
     //取出sampleNum个小值, 取平均
     for (INT i = 0; i < sampleNum; i++)
